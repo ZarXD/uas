@@ -26,8 +26,8 @@ create table Jenis_Tabungan (
 
 -- Buat tabel Nasabah
 create table Nasabah (
-    no_rekening varchar(20) primary key,
     kode_tabungan varchar(50),
+    no_rekening varchar(20) primary key,
     nama varchar(100),
     alamat text,
     saldo bigint,
@@ -52,4 +52,36 @@ create table Detail_Transaksi (
     foreign key (no_transaksi) references Header_Transaksi(no_transaksi),
     foreign key (no_rekening) references Nasabah(no_rekening)
 );
+go
 
+-- ====================================================================================== --
+
+-- Input data ke tabel Cabang
+insert into Cabang values
+    ('CBNI-0001', 'BNI Abdul Muis', 'Jln Jendral Achmad Yani No 123'),
+    ('CBNI-0002', 'BNI Cempaka Mas', 'Jln Perintis Kemerdekaan No 117'),
+    ('CBNI-0003', 'BNI Abdul Muis', 'Jln Cikini Raya Kav. 1-4 No 234')
+
+-- Input data ke tabel Jenis_Tabungan
+insert into Jenis_Tabungan values
+    ('TBNI-001', 'BNI Taplus'),
+    ('TBNI-002', 'BNI Taplus Bisnis'),
+    ('TBNI-003', 'BNI Haji');
+
+-- Input data ke tabel Nasabah
+insert into Nasabah values
+    ('TBNI-001', '000000-01', 'Dewi Sartika', 'Jakarta Selatan', 500000),
+    ('TBNI-002', '000000-02', 'Kemal Ardian', 'Jakarta Pusat', 1000000),
+    ('TBNI-003', '000000-03', 'Nuramalia', 'Jakarta Barat', 5000000);
+
+-- Input data ke tabel Header_Transaksi
+insert into Header_Transaksi values
+    ('0000000001', '2025-07-12', 'CBNI-0001'),
+    ('0000000002', '2025-07-17', 'CBNI-0002'),
+    ('0000000003', '2025-07-21', 'CBNI-0003');
+
+-- Input data ke tabel Detail_Transaksi
+insert into Detail_Transaksi values
+    ('0000000001', '000000-01', 'S', 500.000),
+    ('0000000002', '000000-02', 'S', 1000000),
+    ('0000000003', '000000-03', 'S', 5000000);
