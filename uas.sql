@@ -162,7 +162,7 @@ go
 
 -- ====================================================================================== --
 
--- WIP hari ini coyyy harus beres🚀🚀🚀
+-- WIP hari ini coyyy harus beres🚀🚀🚀 tambahan typo harusnya jenis malah jeni
 
 -- 14. Stored Procedure : Menampilkan semua data Nasabah
 -- 15. Stored Procedure : Tampilkan data Nasabah berdasarkan No Rekening
