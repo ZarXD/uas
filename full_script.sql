@@ -28,7 +28,7 @@ create table Jenis_Tabungan (
 -- Buat tabel Nasabah
 create table Nasabah (
     no_rekening varchar(20) primary key,
-    kode_tabungan varchar(50),
+    kode_tabungan varchar(20),
     nama varchar(100),
     alamat text,
     saldo bigint,
@@ -48,7 +48,7 @@ create table Detail_Transaksi (
     id int identity(1,1) primary key,
     no_transaksi varchar(20),
     no_rekening varchar(20),
-    jenis_transaksi char(1) check (jenis_transaksi in ("S", "T")),
+    jenis_transaksi char(1) check (jenis_transaksi in ('S', 'T')),
     jml_transaksi bigint,
     foreign key (no_transaksi) references Header_Transaksi(no_transaksi),
     foreign key (no_rekening) references Nasabah(no_rekening)
@@ -84,7 +84,7 @@ insert into Header_Transaksi values
 
 -- Input data ke tabel Detail_Transaksi
 insert into Detail_Transaksi values
-    ('0000000001', '000000-01', 'S', 500.000),
+    ('0000000001', '000000-01', 'S', 500000),
     ('0000000002', '000000-02', 'S', 1000000),
     ('0000000003', '000000-03', 'S', 5000000);
 go
@@ -109,7 +109,7 @@ inner join
 go
 
 -- 9. View gabungan 4 tabel : View_Transaksi
-create view Veiw_Transaksi as
+create view View_Transaksi as
     select
         d.id as id_detail,
         ht.no_transaksi,
@@ -170,6 +170,9 @@ as
     begin
         select * from Nasabah;
     end;
+
+-- execute
+exec Sp_TampilDataNasabah;
 go
 
 -- 15. Stored Procedure : Tampilkan data Nasabah berdasarkan No Rekening
@@ -178,10 +181,12 @@ create proc Sp_TampilNasabahByRekening
 as
     begin
         select * from Nasabah where no_rekening = @no_rekening;
-    end
+    end;
+
+exec Sp_TampilNasabahByRekening '000000-01';
 go
 
--- 16. Stored Procedure : Tambah data Nasabah
+-- 16. Stored Procedure : Tambah data Nasabah (10 data baru)
 create proc Sp_TambahNasabah
     @no_rekening varchar(20),
     @kode_tabungan varchar(50),
@@ -198,15 +203,27 @@ as
         end
 
         -- Tambah nasabah baru
-        insert into Nasabah (no_rekeninng, kode_tabungan, nama, alamat, saldo) values
+        insert into Nasabah (no_rekening, kode_tabungan, nama, alamat, saldo) values
             (@no_rekening, @kode_tabungan, @nama, @alamat, @saldo);
 
         print 'Nasabah berhasil ditambahkan';
     end;
+
+-- execute
+exec sp_TambahNasabah '000000-04', 'TBNI-001', 'Dian Ayu', 'Jl. Merpati No. 10', 2500000;
+exec sp_TambahNasabah '000000-05', 'TBNI-002', 'Budi Santoso', 'Jl. Anggrek No. 5', 5000000;
+exec sp_TambahNasabah '000000-06', 'TBNI-003', 'Siti Rahma', 'Jl. Kenanga No. 22', 3000000;
+exec sp_TambahNasabah '000000-07', 'TBNI-001', 'Agus Saputra', 'Jl. Melati No. 8', 4000000;
+exec sp_TambahNasabah '000000-08', 'TBNI-002', 'Lina Marlina', 'Jl. Cemara No. 3', 6000000;
+exec sp_TambahNasabah '000000-09', 'TBNI-003', 'Rudi Hartono', 'Jl. Flamboyan No. 19', 7000000;
+exec sp_TambahNasabah '000000-10', 'TBNI-001', 'Dewi Oktavia', 'Jl. Teratai No. 1', 2000000;
+exec sp_TambahNasabah '000000-11', 'TBNI-002', 'Fajar Nugraha', 'Jl. Cendana No. 12', 3500000;
+exec sp_TambahNasabah '000000-12', 'TBNI-003', 'Nina Pratiwi', 'Jl. Sakura No. 6', 4500000;
+exec sp_TambahNasabah '000000-13', 'TBNI-003', 'Yudi Hermawan', 'Jl. Bougenville No. 14', 5500000;
 go
 
 -- 17. Stored Procedure : Ubah data Nasabah
-create proc Sp_TambahNasabah
+create proc Sp_UbahNasabah
     @no_rekening varchar(20),
     @kode_tabungan varchar(50),
     @nama varchar(100),
@@ -232,10 +249,18 @@ as
 
         print 'Data nasabah berhasil diperbarui';
     end;
+
+-- execute
+exec Sp_UbahNasabah
+    @no_rekening = '000000-04',
+    @kode_tabungan = 'TBNI-001',
+    @nama = 'Dian Ayu Lestari',
+    @alamat = 'Jl. Merpati No. 87',
+    @saldo = 3000000;
 go
 
 -- 18. Stored Procedure : Hapus data Nasabah
-create proc Sp_TambahNasabah
+create proc Sp_HapusNasabah
     @no_rekening varchar(20)
 as
     begin
@@ -251,6 +276,9 @@ as
         
         print 'Data nasabah berhasil diperbarui';
     end;
+
+-- execute
+exec Sp_HapusNasabah '000000-13';
 go
 
 -- 19. Tampilkan total saldo seluruh Nasabah
@@ -266,6 +294,8 @@ as
         delete from Detail_Transaksi where no_transaksi = @no_transaksi
         delete from Header_Transaksi where no_transaksi = @no_transaksi
     end;
+
+exec Sp_HapusTransaksi '0000000003';
 go
 
 -- 21. Trigger untuk INSERT ke Detail_Transaksi -> Update saldo Nasabah
@@ -313,6 +343,7 @@ begin
 end;
 go
 
+
 -- 24. Eksekusi Stored Procedure tambah transaksi baru (otomatis trigger jalan)
 exec Sp_TambahHeaderTransaksi '0000000005', '2025-07-24', 'CBNI-0001';
 exec Sp_TambahDetailTransaksi '0000000005', '000000-01', 'S', 5000000;
@@ -328,6 +359,6 @@ begin tran
 commit
 
 begin tran
-    exec Sp_TambahHeaderTransaksi '0000000007', '2025-07-24', 'CBNI-0001';
-    exec Sp_TambahDetailTransaksi '0000000007', '000000-02', 'T', 99999999;
+    exec Sp_TambahHeaderTransaksi '0000000008', '2025-07-24', 'CBNI-0001';
+    exec Sp_TambahDetailTransaksi '0000000008', '000000-02', 'T', 99999999;
 rollback
